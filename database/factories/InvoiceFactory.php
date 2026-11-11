@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Invoice;
+use App\Models\Client;
+use App\Models\User;
+use App\Enums\InvoiceStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
