@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /.phpunit.cache
 /node_modules
 /public/build
@@ -38,3 +39,36 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+=======
+/vendor/
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+public/storage
+public/hot
+
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
+
+storage/*.key
+.env
+Homestead.yaml
+Homestead.json
+/.vagrant
+.phpunit.result.cache
+/.phpunit.cache
+
+/public/build
+/storage/pail
+.env.backup
+.env.production
+.phpactor.json
+auth.json
+>>>>>>> 06ddccf7b33b4bfcbc68175b7a8e93d0ac94864c
