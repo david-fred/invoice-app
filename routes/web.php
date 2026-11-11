@@ -6,6 +6,9 @@ use App\Livewire\Clients\Index as ClientIndex;
 use App\Livewire\Invoices\Form as InvoiceForm;
 use App\Livewire\Invoices\Index as InvoiceIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
+use App\Http\Controllers\DownloadInvoicePdfController;
+
+Route::get('/invoices/{invoice}/pdf', DownloadInvoicePdfController::class)->name('invoices.pdf');
 
 Route::get('/invoices', InvoiceIndex::class)->name('invoices.index');
 Route::get('/invoices/create', InvoiceForm::class)->name('invoices.create');
