@@ -17,8 +17,25 @@ class InvoiceFactory extends Factory
      */
     public function definition(): array
     {
+        $sequence = fake()->unique()->numberBetween(1, 9999);
+
         return [
-            //
+            'user_id' => User::factory(),
+            'client_id' => Client::factory(),
+            'sequence' => $sequence,
+            'number' => sprintf('INV-%04d', $sequence),
+            'status' => InvoiceStatus::Draft,
+            'issue_date' => now(),
+            'due_date' => now()->addDays(14),
+            'currency' => 'USD',
         ];
+    }
+
+    public function sent(): static
+    {
+        return $this->state(fn () => [
+            'status' => InvoiceStatus::Sent,
+            'sent_at' => now(),
+        ]);
     }
 }

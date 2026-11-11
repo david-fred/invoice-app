@@ -53,4 +53,14 @@ class User extends Authenticatable
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
     }
+
+    public function clients(): \Illuminate\Database\Eloquent\Relations\HasMany
+{
+    return $this->hasMany(Client::class);
+}
+
+public function invoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+{
+    return $this->hasMany(Invoice::class);
+}
 }
