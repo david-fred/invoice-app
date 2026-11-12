@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property InvoiceStatus $status
+ * @property Carbon $issue_date
+ * @property Carbon $due_date
+ */
 class Invoice extends Model
 {
     use HasFactory;
@@ -37,21 +43,33 @@ class Invoice extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Client, $this>
+     */
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
+    /**
+     * @return HasMany<InvoiceItem, $this>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(InvoiceItem::class)->orderBy('position');
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class)->latest('paid_on');
@@ -69,6 +87,10 @@ class Invoice extends Model
             && $this->due_date->lt(today());
     }
 
+    /**
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
     public function scopeOverdue(Builder $query): Builder
     {
         return $query->where('status', InvoiceStatus::Sent)
@@ -76,15 +98,23 @@ class Invoice extends Model
             ->whereColumn('amount_paid', '<', 'total');
     }
 
+    /**
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
     public function scopeWithStatus(Builder $query, ?string $status): Builder
     {
         return match ($status) {
             null, '' => $query,
-            'overdue' => $query->overdue(),
+            'overdue' => $this->scopeOverdue($query),
             default => $query->where('status', $status),
         };
     }
 
+    /**
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
         if (blank($term)) {
