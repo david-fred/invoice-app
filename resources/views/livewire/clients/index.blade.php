@@ -11,28 +11,36 @@
     <table class="w-full text-left">
         <thead>
             <tr class="border-b">
-                <th class="py-2">Name</th>
-                <th>Email</th>
-                <th>Invoices</th>
-                <th></th>
+                <th class="py-2 pr-6">Name</th>
+                <th class="py-2 pr-6">Email</th>
+                <th class="py-2 pr-6">Phone</th>
+                <th class="py-2 pr-6">Address</th>
+                <th class="py-2 pr-6 text-right">Invoices</th>
+                <th class="py-2"></th>
             </tr>
         </thead>
         <tbody>
             @forelse ($this->clients as $client)
                 <tr wire:key="client-{{ $client->id }}" class="border-b">
-                    <td class="py-2">{{ $client->name }}</td>
-                    <td>{{ $client->email }}</td>
-                    <td>{{ $client->invoices_count }}</td>
-                    <td class="space-x-3 text-right">
+                    <td class="py-2 pr-6">{{ $client->name }}</td>
+                    <td class="py-2 pr-6">{{ $client->email ?: '—' }}</td>
+                    <td class="whitespace-nowrap py-2 pr-6">{{ $client->phone ?: '—' }}</td>
+                    <td class="py-2 pr-6" title="{{ $client->address }}">
+                        {{ filled($client->address) ? \Illuminate\Support\Str::limit($client->address, 40) : '—' }}
+                    </td>
+                    <td class="py-2 pr-6 text-right tabular-nums">{{ $client->invoices_count }}</td>
+                    <td class="whitespace-nowrap py-2 text-right">
                         <a href="{{ route('clients.edit', $client) }}" class="underline">Edit</a>
-                        <button type="button" class="text-red-600"
-                                wire:click="delete({{ $client->id }})"
-                                wire:confirm="Delete this client?">Delete</button>
+                        @can('delete', $client)
+                            <button type="button" class="ms-3 text-red-600 hover:underline"
+                                    wire:click="delete({{ $client->id }})"
+                                    wire:confirm="Delete this client?">Delete</button>
+                        @endcan
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="py-4 text-gray-500">No clients yet.</td>
+                    <td colspan="6" class="py-4 text-gray-500">No clients yet. Add your first one.</td>
                 </tr>
             @endforelse
         </tbody>
