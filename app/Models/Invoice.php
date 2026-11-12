@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @property InvoiceStatus $status
  * @property Carbon $issue_date
  * @property Carbon $due_date
+ * @property Carbon|null $reminded_at
  */
 class Invoice extends Model
 {
