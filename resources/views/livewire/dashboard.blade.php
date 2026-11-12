@@ -1,20 +1,39 @@
-<div class="mx-auto max-w-5xl space-y-8 p-6">
+<div class="mx-auto max-w-4xl space-y-6 p-6">
     <h1 class="text-2xl font-semibold">Dashboard</h1>
 
     <div class="grid gap-4 md:grid-cols-3">
         <div class="rounded border p-4">
-            <p class="text-sm text-gray-500">Outstanding</p>
-            <p class="text-2xl font-semibold">{{ number_format($this->outstanding, 2) }}</p>
+            <p class="text-sm text-gray-600">Outstanding</p>
+            @forelse ($this->outstanding as $currency => $amount)
+                @if ($loop->first)
+                    <p class="mt-1 text-xl font-semibold tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                @else
+                    <p class="text-sm text-gray-600 tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                @endif
+            @empty
+                <p class="mt-1 text-xl font-semibold tabular-nums">0.00</p>
+            @endforelse
         </div>
 
         <div class="rounded border p-4">
-            <p class="text-sm text-gray-500">Overdue invoices</p>
-            <p class="text-2xl font-semibold">{{ $this->overdueCount }}</p>
+            <p class="text-sm text-gray-600">Overdue invoices</p>
+            <p @class([
+                'mt-1 text-xl font-semibold tabular-nums',
+                'text-red-600' => $this->overdueCount > 0,
+            ])>{{ $this->overdueCount }}</p>
         </div>
 
         <div class="rounded border p-4">
-            <p class="text-sm text-gray-500">Paid this month</p>
-            <p class="text-2xl font-semibold">{{ number_format($this->paidThisMonth, 2) }}</p>
+            <p class="text-sm text-gray-600">Paid this month</p>
+            @forelse ($this->paidThisMonth as $currency => $amount)
+                @if ($loop->first)
+                    <p class="mt-1 text-xl font-semibold tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                @else
+                    <p class="text-sm text-gray-600 tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                @endif
+            @empty
+                <p class="mt-1 text-xl font-semibold tabular-nums">0.00</p>
+            @endforelse
         </div>
     </div>
 
@@ -25,19 +44,35 @@
         </div>
 
         <table class="w-full text-left">
+            <thead>
+                <tr class="border-b">
+                    <th class="py-2 pr-6">Number</th>
+                    <th class="py-2 pr-6">Client</th>
+                    <th class="py-2 pr-6">Status</th>
+                    <th class="py-2 text-right">Total</th>
+                </tr>
+            </thead>
             <tbody>
                 @forelse ($this->recentInvoices as $invoice)
                     <tr wire:key="recent-{{ $invoice->id }}" class="border-b">
-                        <td class="py-2">
+                        <td class="py-2 pr-6">
                             <a href="{{ route('invoices.show', $invoice) }}" class="underline">{{ $invoice->number }}</a>
                         </td>
-                        <td>{{ $invoice->client->name }}</td>
-                        <td>{{ $invoice->isOverdue() ? 'Overdue' : $invoice->status->label() }}</td>
-                        <td class="text-right">{{ $invoice->currency }} {{ number_format($invoice->total, 2) }}</td>
+                        <td class="py-2 pr-6">{{ $invoice->client->name }}</td>
+                        <td class="whitespace-nowrap py-2 pr-6">
+                            @if ($invoice->isOverdue())
+                                <span class="text-red-600">Overdue</span>
+                            @else
+                                {{ $invoice->status->label() }}
+                            @endif
+                        </td>
+                        <td class="whitespace-nowrap py-2 text-right tabular-nums">
+                            {{ $invoice->currency }} {{ number_format($invoice->total, 2) }}
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td class="py-4 text-gray-500">No invoices yet.</td>
+                        <td colspan="4" class="py-4 text-gray-500">No invoices yet.</td>
                     </tr>
                 @endforelse
             </tbody>
