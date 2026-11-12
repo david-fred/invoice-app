@@ -79,7 +79,7 @@ class Form extends Component
 
     private function blankItem(): array
     {
-        return ['description' => '', 'quantity' => '1', 'unit_price' => '0'];
+        return ['description' => '', 'quantity' => '1', 'unit_price' => ''];
     }
 
     public function render()

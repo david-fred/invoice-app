@@ -43,3 +43,28 @@ it('updates the live total as items change', function () {
         ->set('form.items.0.unit_price', '10')
         ->assertSee('30.00');
 });
+
+it('rejects a zero unit price', function () {
+    Livewire::test(Form::class)
+        ->set('form.client_id', (string) $this->client->id)
+        ->set('form.issue_date', '2026-01-01')
+        ->set('form.due_date', '2026-01-15')
+        ->set('form.items.0.description', 'Consulting')
+        ->set('form.items.0.quantity', '1')
+        ->set('form.items.0.unit_price', '0')
+        ->call('save')
+        ->assertHasErrors(['form.items.0.unit_price']);
+});
+
+it('rejects a currency that is not in the list', function () {
+    Livewire::test(Form::class)
+        ->set('form.client_id', (string) $this->client->id)
+        ->set('form.issue_date', '2026-01-01')
+        ->set('form.due_date', '2026-01-15')
+        ->set('form.currency', 'XYZ')
+        ->set('form.items.0.description', 'Consulting')
+        ->set('form.items.0.quantity', '1')
+        ->set('form.items.0.unit_price', '50')
+        ->call('save')
+        ->assertHasErrors(['form.currency']);
+});

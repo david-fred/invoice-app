@@ -9,6 +9,9 @@ use Livewire\Form;
 
 class InvoiceForm extends Form
 {
+    /** Currencies offered on the invoice form. */
+    public const CURRENCIES = ['USD', 'EUR', 'GBP', 'NGN'];
+
     public string $client_id = '';
 
     public string $issue_date = '';
@@ -32,15 +35,14 @@ class InvoiceForm extends Form
             'client_id' => ['required', Rule::exists('clients', 'id')->where('user_id', Auth::id())],
             'issue_date' => ['required', 'date'],
             'due_date' => ['required', 'date', 'after_or_equal:issue_date'],
-            'currency' => ['required', 'string', 'size:3'],
+            'currency' => ['required', Rule::in(self::CURRENCIES)],
             'discount' => ['required', 'numeric', 'min:0'],
             'tax_rate' => ['required', 'numeric', 'between:0,100'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.description' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'numeric', 'gt:0'],
-            'items.*.unit_price' => ['required', 'numeric', 'min:0'],
-        ];
+            'items.*.unit_price' => ['required', 'numeric', 'gt:0'],        ];
     }
 
     public function setInvoice(Invoice $invoice): void
