@@ -3,42 +3,77 @@
 namespace App\Livewire;
 
 use App\Enums\InvoiceStatus;
-use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\CurrencyTotals;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
-    /** Money still owed on sent invoices. */
+    /** Money still owed on sent invoices, one total per currency. */
     #[Computed]
-    public function outstanding(): float
+    public function outstanding(): array
     {
-        return (float) Auth::user()->invoices()
+        $invoices = Auth::user()->invoices()
             ->where('status', InvoiceStatus::Sent)
-            ->get()
-            ->sum(fn (Invoice $invoice) => $invoice->balance());
+            ->get();
+
+        return CurrencyTotals::sum(
+            $invoices,
+            fn ($invoice) => $invoice->balance(),
+            fn ($invoice) => $invoice->currency,
+        );
     }
 
-    /** Sent invoices that are past due and not fully paid. */
+    /** Money owed on overdue invoices, one total per currency. */
+    #[Computed]
+    public function overdueTotals(): array
+    {
+        $invoices = Auth::user()->invoices()->overdue()->get();
+
+        return CurrencyTotals::sum(
+            $invoices,
+            fn ($invoice) => $invoice->balance(),
+            fn ($invoice) => $invoice->currency,
+        );
+    }
+
+    /** Number of overdue invoices. */
     #[Computed]
     public function overdueCount(): int
     {
         return Auth::user()->invoices()->overdue()->count();
     }
 
-    /** Payments received between the first and last day of this month. */
+    /** Payments received this calendar month, one total per invoice currency. */
     #[Computed]
-    public function paidThisMonth(): float
+    public function paidThisMonth(): array
     {
-        return (float) Payment::query()
+        $payments = Payment::query()
+            ->with('invoice')
             ->whereHas('invoice', fn ($query) => $query->where('user_id', Auth::id()))
             ->whereBetween('paid_on', [
                 now()->startOfMonth()->toDateString(),
                 now()->endOfMonth()->toDateString(),
             ])
-            ->sum('amount');
+            ->get();
+
+        return CurrencyTotals::sum(
+            $payments,
+            fn ($payment) => $payment->amount,
+            fn ($payment) => $payment->invoice->currency,
+        );
+    }
+
+    /** Invoices that became fully paid this calendar month. */
+    #[Computed]
+    public function invoicesPaidThisMonth(): int
+    {
+        return Auth::user()->invoices()
+            ->where('status', InvoiceStatus::Paid)
+            ->whereBetween('paid_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
     }
 
     #[Computed]
