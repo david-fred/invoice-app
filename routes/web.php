@@ -3,6 +3,7 @@
 use App\Http\Controllers\DownloadInvoicePdfController;
 use App\Livewire\Clients\Form as ClientForm;
 use App\Livewire\Clients\Index as ClientIndex;
+use App\Livewire\Dashboard;
 use App\Livewire\Invoices\Form as InvoiceForm;
 use App\Livewire\Invoices\Index as InvoiceIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', fn () => redirect()->route('invoices.index'))->name('dashboard');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::view('profile', 'profile')->name('profile');
 
     Route::get('/invoices', InvoiceIndex::class)->name('invoices.index');

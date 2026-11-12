@@ -48,9 +48,10 @@ test('navigation menu can be rendered', function () {
 
     $response = $this->actingAs($user)->get('/dashboard');
 
-    $response->assertRedirect(route('invoices.index'));
+    $response->assertOk()
+        ->assertSee('Dashboard')
+        ->assertSee('Invoices');
 });
-
 test('users can logout', function () {
     $user = User::factory()->create();
 
