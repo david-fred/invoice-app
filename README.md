@@ -101,7 +101,9 @@ Performance metrics have not been measured yet.
 2. `cd invoice-app`
 3. `composer install`
 4. `cp .env.example .env` and then `php artisan key:generate`
-5. `touch database/database.sqlite` (SQLite database file)
+5. 5. Create the SQLite database file:
+   - macOS / Linux: `touch database/database.sqlite`
+   - Windows PowerShell: `New-Item database/database.sqlite`
 6. `npm install`
 7. `php artisan migrate`
 8. `npm run dev` (keep this running)
