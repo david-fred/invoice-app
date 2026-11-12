@@ -64,7 +64,7 @@ Key design decisions:
   **Resolution:** Each invoice stores its own totals and line amounts as a snapshot, so issued amounts stay fixed.
 
 * **Issue:** Two requests could create the same invoice number at once.
-  **Resolution:** A unique database index on `(user_id, sequence)` makes the database reject duplicates. Currently a conflicting request fails instead of retrying. Automatic retry is planned.
+  **Resolution:** A unique database index on `(user_id, sequence)` makes the database reject duplicates, and `CreateInvoice` retries up to three times, each time reading the latest number.
 
 Performance metrics have not been measured yet.
 
