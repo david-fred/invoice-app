@@ -23,7 +23,7 @@ class Invoice extends Model
         'client_id', 'sequence', 'number', 'status',
         'issue_date', 'due_date', 'currency', 'notes',
         'subtotal', 'discount', 'tax_rate', 'tax', 'total',
-        'amount_paid', 'sent_at', 'paid_at',
+        'amount_paid', 'sent_at', 'paid_at', 'reminded_at',
     ];
 
     protected function casts(): array
@@ -34,6 +34,7 @@ class Invoice extends Model
             'due_date' => 'date',
             'sent_at' => 'datetime',
             'paid_at' => 'datetime',
+            'reminded_at' => 'datetime',
             'subtotal' => 'decimal:2',
             'discount' => 'decimal:2',
             'tax_rate' => 'decimal:2',
@@ -96,6 +97,20 @@ class Invoice extends Model
         return $query->where('status', InvoiceStatus::Sent)
             ->whereDate('due_date', '<', today())
             ->whereColumn('amount_paid', '<', 'total');
+    }
+
+    /**
+     * Overdue invoices with an email-addressed client that haven't been reminded this week.
+     *
+     * @param  Builder<Invoice>  $query
+     * @return Builder<Invoice>
+     */
+    public function scopeDueForReminder(Builder $query): Builder
+    {
+        return $this->scopeOverdue($query)
+            ->whereHas('client', fn (Builder $c) => $c->whereNotNull('email')->where('email', '!=', ''))
+            ->where(fn (Builder $q) => $q->whereNull('reminded_at')
+                ->orWhere('reminded_at', '<', now()->subDays(7)));
     }
 
     /**
