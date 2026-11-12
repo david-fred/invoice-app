@@ -64,7 +64,7 @@ Key design decisions:
   **Resolution:** Each invoice stores its own totals and line amounts as a snapshot, so issued amounts stay fixed.
 
 * **Issue:** Two requests could create the same invoice number at once.
-  **Resolution:** A unique database index on `(user_id, sequence)` makes the database reject duplicates. Currently a conflicting request fails instead of retrying. Automatic retry is planned.
+  **Resolution:** A unique database index on `(user_id, sequence)` makes the database reject duplicates, and `CreateInvoice` retries up to three times, each time reading the latest number.
 
 Performance metrics have not been measured yet.
 
@@ -101,7 +101,9 @@ Performance metrics have not been measured yet.
 2. `cd invoice-app`
 3. `composer install`
 4. `cp .env.example .env` and then `php artisan key:generate`
-5. `touch database/database.sqlite` (SQLite database file)
+5. 5. Create the SQLite database file:
+   - macOS / Linux: `touch database/database.sqlite`
+   - Windows PowerShell: `New-Item database/database.sqlite`
 6. `npm install`
 7. `php artisan migrate`
 8. `npm run dev` (keep this running)
