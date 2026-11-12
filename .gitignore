@@ -71,3 +71,4 @@ Homestead.json
 auth.json
 .DS_Store
 .env
+.env.before_lerd
