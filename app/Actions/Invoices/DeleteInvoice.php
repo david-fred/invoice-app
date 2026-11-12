@@ -10,10 +10,9 @@ class DeleteInvoice
 {
     public function handle(Invoice $invoice): void
     {
-        throw_unless(
-            $invoice->status === InvoiceStatus::Draft,
-            new DomainException('Only draft invoices can be deleted.'),
-        );
+        if ($invoice->status !== InvoiceStatus::Draft) {
+            throw new DomainException('Only draft invoices can be deleted.');
+        }
 
         $invoice->delete(); // items cascade via the foreign key
     }

@@ -15,14 +15,16 @@ class UpdateInvoice
         private RefreshInvoiceTotals $refreshTotals,
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function handle(Invoice $invoice, array $data): Invoice
     {
-        throw_unless(
-            $invoice->status === InvoiceStatus::Draft,
-            new DomainException('Sent invoices cannot be edited.'),
-        );
+        if ($invoice->status !== InvoiceStatus::Draft) {
+            throw new DomainException('Sent invoices cannot be edited.');
+        }
 
-        return DB::transaction(function () use ($invoice, $data) {
+        return DB::transaction(function () use ($invoice, $data): Invoice {
             $invoice->update(Arr::except($data, ['items']));
             $this->syncItems->handle($invoice, $data['items']);
             $this->refreshTotals->handle($invoice);
