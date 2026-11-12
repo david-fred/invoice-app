@@ -112,4 +112,4 @@ Set `MAIL_MAILER=log` in `.env` so emails are written to `storage/logs/laravel.l
 ---
 
 ## 09. LICENSE
-To be decided. Add a `LICENSE` file before making the repository public.
+MIT
