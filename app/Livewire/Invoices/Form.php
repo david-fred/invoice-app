@@ -14,6 +14,7 @@ use Livewire\Component;
 class Form extends Component
 {
     public InvoiceForm $form;
+
     public ?Invoice $invoice = null;
 
     public function mount(?Invoice $invoice = null): void

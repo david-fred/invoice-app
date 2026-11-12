@@ -10,11 +10,17 @@ use Livewire\Form;
 class InvoiceForm extends Form
 {
     public string $client_id = '';
+
     public string $issue_date = '';
+
     public string $due_date = '';
+
     public string $currency = 'USD';
+
     public string $discount = '0';
+
     public string $tax_rate = '0';
+
     public string $notes = '';
 
     /** @var array<int, array{description: string, quantity: string, unit_price: string}> */

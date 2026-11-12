@@ -2,8 +2,8 @@
 
 namespace App\Actions\Invoices;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Invoice;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GenerateInvoicePdf
 {

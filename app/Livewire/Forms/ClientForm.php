@@ -8,8 +8,11 @@ use Livewire\Form;
 class ClientForm extends Form
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $address = '';
 
     public function rules(): array

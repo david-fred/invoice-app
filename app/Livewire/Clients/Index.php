@@ -3,10 +3,10 @@
 namespace App\Livewire\Clients;
 
 use App\Actions\Clients\DeleteClient;
+use DomainException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use DomainException;
 
 class Index extends Component
 {

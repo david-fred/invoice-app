@@ -13,7 +13,9 @@ class Show extends Component
     public Invoice $invoice;
 
     public string $amount = '';
+
     public string $paid_on = '';
+
     public string $method = '';
 
     public function mount(Invoice $invoice): void

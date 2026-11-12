@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DownloadInvoicePdfController;
 use App\Livewire\Clients\Form as ClientForm;
 use App\Livewire\Clients\Index as ClientIndex;
 use App\Livewire\Invoices\Form as InvoiceForm;
 use App\Livewire\Invoices\Index as InvoiceIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
+use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 

@@ -12,6 +12,7 @@ use Livewire\Component;
 class Form extends Component
 {
     public ClientForm $form;
+
     public ?Client $client = null;
 
     public function mount(?Client $client = null): void
