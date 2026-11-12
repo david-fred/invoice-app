@@ -12,6 +12,7 @@
             <option value="draft">Draft</option>
             <option value="sent">Sent</option>
             <option value="paid">Paid</option>
+                        <option value="cancelled">Cancelled</option>
             <option value="overdue">Overdue</option>
         </select>
     </div>

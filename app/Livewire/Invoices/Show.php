@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Invoices;
 
+use App\Actions\Invoices\CancelInvoice;
 use App\Actions\Invoices\DeleteInvoice;
 use App\Actions\Invoices\SendInvoice;
 use App\Actions\Payments\RecordPayment;
@@ -29,6 +30,14 @@ class Show extends Component
     public function send(SendInvoice $action): void
     {
         $this->authorize('send', $this->invoice);
+
+        $action->handle($this->invoice);
+        $this->invoice->refresh();
+    }
+
+    public function cancel(CancelInvoice $action): void
+    {
+        $this->authorize('cancel', $this->invoice);
 
         $action->handle($this->invoice);
         $this->invoice->refresh();

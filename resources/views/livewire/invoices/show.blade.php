@@ -9,6 +9,10 @@
                 <button wire:click="send" wire:confirm="Send this invoice? It will be locked."
                         class="underline">Send</button>
             @endcan
+            @can('cancel', $invoice)
+                <button wire:click="cancel" wire:confirm="Cancel this invoice? This cannot be undone."
+                        class="text-red-600">Cancel invoice</button>
+            @endcan
             <a href="{{ route('invoices.pdf', $invoice) }}" class="underline">Download PDF</a>
             @can('delete', $invoice)
                 <button wire:click="delete" wire:confirm="Delete this draft?"

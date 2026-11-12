@@ -28,6 +28,13 @@ class InvoicePolicy
         return $this->update($user, $invoice);
     }
 
+    public function cancel(User $user, Invoice $invoice): bool
+    {
+        return $this->view($user, $invoice)
+            && $invoice->status === InvoiceStatus::Sent
+            && (float) $invoice->amount_paid === 0.0;
+    }
+
     public function recordPayment(User $user, Invoice $invoice): bool
     {
         return $this->view($user, $invoice) && $invoice->status === InvoiceStatus::Sent;
