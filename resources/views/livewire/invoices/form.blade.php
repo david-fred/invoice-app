@@ -102,6 +102,8 @@
             <p class="text-xl font-semibold">Total {{ $form->currency }} {{ number_format($this->totals['total'], 2) }}</p>
         </div>
 
-        <button type="submit" class="rounded bg-gray-900 px-4 py-2 text-white">Save invoice</button>
-    </form>
+        <div class="flex items-center gap-4">
+            <button type="submit" class="rounded bg-gray-900 px-4 py-2 text-white">Save invoice</button>
+            <a href="{{ $invoice ? route('invoices.show', $invoice) : route('invoices.index') }}" class="underline">Cancel</a>
+        </div>    </form>
 </div>

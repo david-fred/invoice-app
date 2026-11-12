@@ -1,4 +1,5 @@
 <div class="mx-auto max-w-4xl space-y-6 p-6">
+    <a href="{{ route('invoices.index') }}" class="text-sm text-gray-600 hover:underline">← Back to invoices</a>
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold">{{ $invoice->number }}</h1>
         <div class="flex gap-3">
