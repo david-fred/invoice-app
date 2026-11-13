@@ -25,7 +25,7 @@ class InvoicePolicy
 
     public function send(User $user, Invoice $invoice): bool
     {
-        return $this->update($user, $invoice);
+        return $this->update($user, $invoice) && (float) $invoice->total > 0;
     }
 
     public function cancel(User $user, Invoice $invoice): bool

@@ -18,3 +18,10 @@ it('locks sent invoices from editing', function () {
 
     expect($owner->can('update', $sent))->toBeFalse();
 });
+
+it('does not allow sending a draft with no value', function () {
+    $owner = User::factory()->create();
+    $draft = Invoice::factory()->create(['user_id' => $owner->id, 'total' => 0]);
+
+    expect($owner->can('send', $draft))->toBeFalse();
+});

@@ -2,10 +2,9 @@
 
 namespace App\Actions\Invoices;
 
-use App\Mail\InvoiceReminder;
+use App\Jobs\SendInvoiceReminder;
 use App\Models\Invoice;
 use DomainException;
-use Illuminate\Support\Facades\Mail;
 
 class SendOverdueReminder
 {
@@ -21,8 +20,7 @@ class SendOverdueReminder
             throw new DomainException('This client has no email address.');
         }
 
-        Mail::to($invoice->client->email)->send(new InvoiceReminder($invoice));
-
-        $invoice->update(['reminded_at' => now()]);
+        // The job sends the email and records reminded_at only after the mail goes out.
+        SendInvoiceReminder::dispatch($invoice->id);
     }
 }

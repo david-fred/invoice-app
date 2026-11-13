@@ -9,12 +9,12 @@ use Illuminate\Support\Facades\Mail;
 
 it('marks a draft as sent and emails the client', function () {
     Mail::fake();
-    $invoice = Invoice::factory()->create();
+    $invoice = Invoice::factory()->create(['total' => 100]);
 
     app(SendInvoice::class)->handle($invoice);
 
     expect($invoice->fresh()->status)->toBe(InvoiceStatus::Sent);
-    Mail::assertSent(InvoiceSent::class);
+    Mail::assertQueued(InvoiceSent::class);
 });
 
 it('refuses to send an invoice twice', function () {
@@ -23,3 +23,13 @@ it('refuses to send an invoice twice', function () {
 
     app(SendInvoice::class)->handle($invoice);
 })->throws(DomainException::class);
+
+it('refuses to send a zero-value invoice', function () {
+    Mail::fake();
+    $invoice = Invoice::factory()->create(['total' => 0]);
+
+    expect(fn () => app(SendInvoice::class)->handle($invoice))
+        ->toThrow(DomainException::class);
+
+    expect($invoice->fresh()->status)->toBe(InvoiceStatus::Draft);
+});

@@ -10,7 +10,7 @@ class SendOverdueReminders extends Command
 {
     protected $signature = 'invoices:remind-overdue';
 
-    protected $description = 'Email clients about overdue invoices, at most once a week per invoice.';
+    protected $description = 'Queue reminder emails for overdue invoices, at most once a week per invoice.';
 
     public function handle(SendOverdueReminder $remind): int
     {
@@ -20,7 +20,7 @@ class SendOverdueReminders extends Command
             $remind->handle($invoice);
         }
 
-        $this->info("Sent {$invoices->count()} reminder(s).");
+        $this->info("Queued {$invoices->count()} reminder(s).");
 
         return self::SUCCESS;
     }

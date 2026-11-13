@@ -68,4 +68,9 @@ new #[Layout('layouts.guest')] class extends Component
             </x-primary-button>
         </div>
     </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+        No account yet?
+        <a href="{{ route('register') }}" class="underline hover:text-gray-900" wire:navigate>Create one</a>
+    </p>
 </div>

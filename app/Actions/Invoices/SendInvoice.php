@@ -22,6 +22,10 @@ class SendInvoice
                 throw new DomainException('Only draft invoices can be sent.');
             }
 
+            if ((float) $locked->total <= 0) {
+                throw new DomainException('An invoice needs a total above zero before it can be sent.');
+            }
+
             $locked->update([
                 'status' => InvoiceStatus::Sent,
                 'sent_at' => now(),

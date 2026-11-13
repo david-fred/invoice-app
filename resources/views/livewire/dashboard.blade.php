@@ -16,24 +16,37 @@
         </div>
 
         <div class="rounded border p-4">
-            <p class="text-sm text-gray-600">Overdue invoices</p>
-            <p @class([
-                'mt-1 text-xl font-semibold tabular-nums',
-                'text-red-600' => $this->overdueCount > 0,
-            ])>{{ $this->overdueCount }}</p>
-        </div>
-
-        <div class="rounded border p-4">
-            <p class="text-sm text-gray-600">Paid this month</p>
-            @forelse ($this->paidThisMonth as $currency => $amount)
+            <p class="text-sm text-gray-600">Overdue amount</p>
+            @forelse ($this->overdueTotals as $currency => $amount)
                 @if ($loop->first)
-                    <p class="mt-1 text-xl font-semibold tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                    <p class="mt-1 text-xl font-semibold tabular-nums text-red-600">{{ $currency }} {{ number_format($amount, 2) }}</p>
                 @else
-                    <p class="text-sm text-gray-600 tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                    <p class="text-sm text-red-600 tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
                 @endif
             @empty
                 <p class="mt-1 text-xl font-semibold tabular-nums">0.00</p>
             @endforelse
+            <p class="mt-1 text-sm text-gray-600">
+                {{ $this->overdueCount }} {{ $this->overdueCount === 1 ? 'INVOICE' : 'INVOICES' }}
+            </p>
+        </div>
+
+        <div class="space-y-3 rounded border p-4">
+            <p class="text-sm text-gray-600">Paid this month</p>
+
+            <div>
+                <p class="text-xs uppercase tracking-wide text-gray-500">Payments received</p>
+                @forelse ($this->paidThisMonth as $currency => $amount)
+                    <p class="text-xl font-semibold tabular-nums">{{ $currency }} {{ number_format($amount, 2) }}</p>
+                @empty
+                    <p class="text-xl font-semibold tabular-nums">0.00</p>
+                @endforelse
+            </div>
+
+            <div>
+                <p class="text-xs uppercase tracking-wide text-gray-500">Invoices paid</p>
+                <p class="text-xl font-semibold tabular-nums">{{ $this->invoicesPaidThisMonth }}</p>
+            </div>
         </div>
     </div>
 
