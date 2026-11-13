@@ -29,7 +29,11 @@ class Form extends Component
         $this->form->validate();
 
         if ($this->client) {
-            $update->handle($this->client, $this->form->all());
+            // Reload through the signed-in user's own clients, so the write never trusts the page's copy.
+            $client = Auth::user()->clients()->findOrFail($this->client->id);
+            $this->authorize('update', $client);
+
+            $update->handle($client, $this->form->all());
         } else {
             $create->handle(Auth::user(), $this->form->all());
         }

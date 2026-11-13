@@ -70,11 +70,17 @@ class Form extends Component
     {
         $this->form->validate();
 
-        $invoice = $this->invoice
-            ? $update->handle($this->invoice, $this->form->all())
-            : $create->handle(Auth::user(), $this->form->all());
+        if ($this->invoice) {
+            // Reload through the signed-in user's own invoices, so the write never trusts the page's copy.
+            $invoice = Auth::user()->invoices()->findOrFail($this->invoice->id);
+            $this->authorize('update', $invoice);
 
-        $this->redirectRoute('invoices.show', $invoice);
+            $saved = $update->handle($invoice, $this->form->all());
+        } else {
+            $saved = $create->handle(Auth::user(), $this->form->all());
+        }
+
+        $this->redirectRoute('invoices.show', $saved);
     }
 
     private function blankItem(): array
