@@ -25,12 +25,13 @@
             <label class="text-sm">
                 <span class="block text-gray-600">Status</span>
                 <select class="rounded" wire:model.live="status">
-                    <option value="">All statuses</option>
+                    <option value="">All except cancelled</option>
+                    <option value="all">Everything (incl. cancelled)</option>
                     <option value="draft">Draft</option>
                     <option value="sent">Sent (incl. overdue)</option>
                     <option value="paid">Paid</option>
                     <option value="overdue">Overdue</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="cancelled">Cancelled only</option>
                 </select>
             </label>
         </div>
@@ -48,7 +49,12 @@
 
             <label class="text-sm">
                 <span class="block text-gray-600">Paid in month</span>
-                <input type="month" class="rounded" wire:model.live="paidMonth">
+                <select class="rounded" wire:model.live="paidMonth">
+                    <option value="">Any month</option>
+                    @foreach ($this->paidMonthOptions as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>
             </label>
 
             <label class="text-sm">
@@ -60,8 +66,13 @@
                 <span class="block text-gray-600">Paid to</span>
                 <input type="date" class="rounded" wire:model.live="paidTo">
             </label>
+        </div>
 
-            <button type="button" class="pb-1 text-sm underline" wire:click="clearFilters">Clear filters</button>
+        <div class="flex gap-4 text-sm">
+            <button type="button" class="underline" wire:click="clearFilters">Clear filters</button>
+            @if ($sort !== '')
+                <button type="button" class="underline" wire:click="resetSort">Reset order</button>
+            @endif
         </div>
     </div>
 

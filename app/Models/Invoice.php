@@ -121,7 +121,10 @@ class Invoice extends Model
     public function scopeWithStatus(Builder $query, ?string $status): Builder
     {
         return match ($status) {
-            null, '' => $query,
+            // Default: everything except cancelled, which is not money owed.
+            null, '' => $query->where('status', '!=', InvoiceStatus::Cancelled->value),
+            // Explicit choice: include cancelled invoices as well.
+            'all' => $query,
             'overdue' => $this->scopeOverdue($query),
             default => $query->where('status', $status),
         };

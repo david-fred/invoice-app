@@ -19,6 +19,9 @@ class Index extends Component
 {
     use WithPagination;
 
+    /** Where the last filter and sort choices are kept between visits. */
+    private const STATE_KEY = 'invoices.index.state';
+
     /** Columns the user can sort by, mapped to the database column they use. */
     private const SORTABLE = [
         'number' => 'sequence',
@@ -61,6 +64,47 @@ class Index extends Component
 
     #[Url(except: 'desc')]
     public string $direction = 'desc';
+
+    public function mount(): void
+    {
+        // Ignore a month that isn't in the dropdown, e.g. ?paidMonth=November in the URL.
+        if ($this->paidMonth !== '' && ! array_key_exists($this->paidMonth, $this->monthOptions())) {
+            $this->paidMonth = '';
+        }
+
+        // Opened without any filters (for example, Back from an invoice): restore the last list state.
+        if (request()->query() === [] && session()->has(self::STATE_KEY)) {
+            foreach ((array) session(self::STATE_KEY) as $field => $value) {
+                if (array_key_exists($field, $this->filterState())) {
+                    $this->{$field} = (string) $value;
+                }
+            }
+        }
+    }
+
+    /** Runs on every request: remembers the current list state for next time. */
+    public function dehydrate(): void
+    {
+        session([self::STATE_KEY => $this->filterState()]);
+    }
+
+    /**
+     * The invoice list URL with the last filters and sort applied.
+     * The invoice pages use this for their Back link, so the list comes back as it was left.
+     */
+    public static function backUrl(): string
+    {
+        $state = array_filter(
+            (array) session(self::STATE_KEY, []),
+            fn ($value) => $value !== '' && $value !== null,
+        );
+
+        if (($state['sort'] ?? '') === '') {
+            unset($state['direction']);
+        }
+
+        return route('invoices.index', $state);
+    }
 
     /** Any filter change goes back to page 1. */
     public function updated(string $property): void
@@ -120,6 +164,13 @@ class Index extends Component
             ->all();
     }
 
+    /** The last 24 months, newest first, for the "Paid in month" dropdown. */
+    #[Computed]
+    public function paidMonthOptions(): array
+    {
+        return $this->monthOptions();
+    }
+
     #[Computed]
     public function invoices()
     {
@@ -165,7 +216,7 @@ class Index extends Component
             $query->whereDate('issue_date', '<=', $this->issuedTo);
         }
 
-        // "Paid" filter: invoices that have at least one payment in the period.
+        // Payment filter: invoices with at least one payment in the period.
         if ($range = $this->paymentRange()) {
             $query->whereHas('payments', fn (Builder $payments) => $payments->whereBetween('paid_on', $range));
         }
@@ -243,6 +294,37 @@ class Index extends Component
         }
 
         return $query->orderBy(self::SORTABLE[$this->sort], $direction);
+    }
+
+    /** @return array<string, string> YYYY-MM => "November 2026", newest first. */
+    private function monthOptions(): array
+    {
+        $options = [];
+        $month = now()->startOfMonth();
+
+        for ($i = 0; $i < 24; $i++) {
+            $options[$month->format('Y-m')] = $month->format('F Y');
+            $month->subMonth();
+        }
+
+        return $options;
+    }
+
+    /** @return array<string, string> */
+    private function filterState(): array
+    {
+        return [
+            'search' => $this->search,
+            'status' => $this->status,
+            'currency' => $this->currency,
+            'issuedFrom' => $this->issuedFrom,
+            'issuedTo' => $this->issuedTo,
+            'paidMonth' => $this->paidMonth,
+            'paidFrom' => $this->paidFrom,
+            'paidTo' => $this->paidTo,
+            'sort' => $this->sort,
+            'direction' => $this->direction,
+        ];
     }
 
     public function delete(int $invoiceId, DeleteInvoice $action): void
