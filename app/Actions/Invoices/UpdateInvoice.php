@@ -20,16 +20,20 @@ class UpdateInvoice
      */
     public function handle(Invoice $invoice, array $data): Invoice
     {
-        if ($invoice->status !== InvoiceStatus::Draft) {
-            throw new DomainException('Sent invoices cannot be edited.');
-        }
-
         return DB::transaction(function () use ($invoice, $data): Invoice {
-            $invoice->update(Arr::except($data, ['items']));
-            $this->syncItems->handle($invoice, $data['items']);
-            $this->refreshTotals->handle($invoice);
+            // Lock the row so a send in another tab can't land between the check and the write.
+            /** @var Invoice $locked */
+            $locked = Invoice::query()->whereKey($invoice->id)->lockForUpdate()->firstOrFail();
 
-            return $invoice;
+            if ($locked->status !== InvoiceStatus::Draft) {
+                throw new DomainException('Sent invoices cannot be edited.');
+            }
+
+            $locked->update(Arr::except($data, ['items']));
+            $this->syncItems->handle($locked, $data['items']);
+            $this->refreshTotals->handle($locked);
+
+            return $locked;
         });
     }
 }
